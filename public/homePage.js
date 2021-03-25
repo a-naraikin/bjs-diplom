@@ -61,3 +61,39 @@ moneyManager.sendMoneyCallback = data => {
     checkСondition(data, response, msg);
   })
 }
+
+const favoritesWidget = new FavoritesWidget();
+
+function getDataList(response){
+  favoritesWidget.clearTable();
+  favoritesWidget.fillTable(response.data);
+  moneyManager.updateUsersList(response.data);
+}
+
+ApiConnector.getFavorites(response => {
+  if(response.success){
+    getDataList(response);
+  }
+})
+
+favoritesWidget.addUserCallback = data => {
+  ApiConnector.addUserToFavorites(data, response => {
+    if(response.success){
+      getDataList(response);
+      moneyManager.setMessage(response.success, `${data.name} добавлен`);
+    } else {
+      moneyManager.setMessage(response.success, response.error);
+    }
+  }) 
+}
+
+favoritesWidget.removeUserCallback = data => {
+  ApiConnector.removeUserFromFavorites(data, response => {
+    if(response.success){
+      getDataList(response);
+      moneyManager.setMessage(response.success, `ID ${data} удален`);
+    } else {
+      moneyManager.setMessage(response.success, response.error);
+    }
+  }) 
+}
