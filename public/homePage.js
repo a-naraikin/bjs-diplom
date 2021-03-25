@@ -29,3 +29,35 @@ function getRates(){
 
 getRates();
 setTimeout(getRates, 1000 * 60);
+
+const moneyManager = new MoneyManager();
+
+function checkСondition(data, response, message){
+  if(response.success){
+    ProfileWidget.showProfile(response.data);
+    moneyManager.setMessage(response.success, message);
+  } else {
+    moneyManager.setMessage(response.success, response.error);
+  }
+}
+
+moneyManager.addMoneyCallback = data => {
+  ApiConnector.addMoney(data, response => {
+    const msg = `Пополнение счёта на ${data.amount} ${data.currency}`
+    checkСondition(data, response, msg);
+  });
+}
+
+moneyManager.conversionMoneyCallback = data => {
+  ApiConnector.convertMoney(data, response => {
+    const msg = `Конвертация ${data.fromAmount} ${data.fromCurrency} в ${data.targetCurrency}`;
+    checkСondition(data, response, msg);
+  })
+}
+
+moneyManager.sendMoneyCallback = data => {
+  ApiConnector.transferMoney(data, response => {
+    const msg = `Перевод ${data.amount} ${data.currency } пользователю ID ${data.to}`;
+    checkСondition(data, response, msg);
+  })
+}
