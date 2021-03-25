@@ -15,3 +15,17 @@ ApiConnector.current(response => {
     ProfileWidget.showProfile(response.data);
   }
 });
+
+const ratesBoard = new RatesBoard();
+
+function getRates(){
+  ApiConnector.getStocks(response => {
+    if (response.success){
+      ratesBoard.clearTable();
+      ratesBoard.fillTable(response.data);
+    }
+  });
+}
+
+getRates();
+setTimeout(getRates, 1000 * 60);
